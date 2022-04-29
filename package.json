@@ -1,0 +1,28 @@
+{
+  "name": "024.u-vote-it",
+  "version": "1.0.0",
+  "description": "This is my ninth project for the University of Oregon Coding Bootcamp 2022. In this project, I will use Express.js to create a server-side API that will connect with a SQL database from which front-end developers can pull data for their new voting application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ashlynn4567/U-Vote-It.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ashlynn4567/U-Vote-It/issues"
+  },
+  "homepage": "https://github.com/ashlynn4567/U-Vote-It#readme",
+  "dependencies": {
+    "express": "^4.18.0",
+    "mysql2": "^2.3.3"
+  },
+  "devDependencies": {
+    "jest": "^28.0.3"
+  }
+}
