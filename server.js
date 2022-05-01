@@ -1,13 +1,16 @@
+// import all necessary dependencies
 const express = require("express");
 const mysql = require("mysql2");
 const inputCheck = require("./utils/inputCheck");
 
+// initiate server and set port
 const PORT = process.env.PORT || 3001;
 const app = express();
 
 // express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
 
 // connect to database 
 const db = mysql.createConnection(
@@ -21,6 +24,7 @@ const db = mysql.createConnection(
     },
     console.log("Connected to the election database")
 );
+
 
 // get all candidates
 app.get("/api/candidates", (req, res) => {
@@ -66,29 +70,6 @@ app.get("/api/candidate/:id", (req, res) => {
 });
 
 
-// delete a candidate
-app.delete("/api/candidate/:id", (req, res) => {
-    const sql = `DELETE FROM candidates WHERE id = ?`;
-    const params = [req.params.id];
-
-    db.query(sql, params, (err, result) => {
-        if (err) {
-            res.statusMessage(404).json({ error: res.message });
-        } else if (!result.affectedRows) {
-            res.json({
-                message: "Candidate not found."
-            });
-        } else {
-            res.json({
-                message: "deleted",
-                changes: result.affectedRows,
-                id: req.params.id
-            });
-        };
-    });
-});
-
-
 // create a candidate
 app.post("/api/candidate", ({ body }, res) => {
     const errors = inputCheck(body, "first_name", "last_name", "industry_connected");
@@ -111,6 +92,61 @@ app.post("/api/candidate", ({ body }, res) => {
         });
     });
 });
+
+
+// update a candidate's party
+app.put("/api/candidate/:id", (req, res) => {
+    const errors = inputCheck(req.body, "party_id");
+    if (errors) {
+        res.status(400).json({ error: errors });
+        return;
+    };
+    
+    const sql = `UPDATE candidates SET party_id = ?
+        WHERE id = ?`;
+    const params = [req.body.party_id, req.params.id];
+
+    db.query(sql, params, (err, result) => {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            // check if a record was found
+        } else if (!result.affectedRows) {
+            res.json({
+                message: "Candidate was not found."
+            });
+        } else {
+            res.json({
+                message: "success",
+                data: req.body,
+                changes: result.affectedRows
+            });
+        };
+    });
+});
+
+
+// delete a candidate
+app.delete("/api/candidate/:id", (req, res) => {
+    const sql = `DELETE FROM candidates WHERE id = ?`;
+    const params = [req.params.id];
+
+    db.query(sql, params, (err, result) => {
+        if (err) {
+            res.statusMessage(404).json({ error: res.message });
+        } else if (!result.affectedRows) {
+            res.json({
+                message: "Candidate not found."
+            });
+        } else {
+            res.json({
+                message: "deleted",
+                changes: result.affectedRows,
+                id: req.params.id
+            });
+        };
+    });
+});
+
 
 // get all parties
 app.get("/api/parties", (req, res) => {
