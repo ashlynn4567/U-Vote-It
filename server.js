@@ -26,6 +26,30 @@ const db = mysql.createConnection(
 );
 
 
+// create a candidate
+app.post("/api/candidate", ({ body }, res) => {
+    const errors = inputCheck(body, "first_name", "last_name", "industry_connected");
+    if (errors) {
+        res.status(400).json({ error: errors });
+        return;
+    };
+    const sql = `INSERT INTO candidates (first_name, last_name, industry_connected)
+        VALUES (?, ?, ?)`;
+    const params = [body.first_name, body.last_name, body.industry_connected];
+
+    db.query(sql, params, (err, result) => {
+        if(err) {
+            res.status(400).json({ error: err.message });
+            return;
+        };
+        res.json({
+            message: "success",
+            data: body
+        });
+    });
+});
+
+
 // get all candidates
 app.get("/api/candidates", (req, res) => {
     const sql = `SELECT candidates.*, parties.name
@@ -65,30 +89,6 @@ app.get("/api/candidate/:id", (req, res) => {
         res.json({
             message: "success",
             data: row
-        });
-    });
-});
-
-
-// create a candidate
-app.post("/api/candidate", ({ body }, res) => {
-    const errors = inputCheck(body, "first_name", "last_name", "industry_connected");
-    if (errors) {
-        res.status(400).json({ error: errors });
-        return;
-    };
-    const sql = `INSERT INTO candidates (first_name, last_name, industry_connected)
-        VALUES (?, ?, ?)`;
-    const params = [body.first_name, body.last_name, body.industry_connected];
-
-    db.query(sql, params, (err, result) => {
-        if(err) {
-            res.status(400).json({ error: err.message });
-            return;
-        };
-        res.json({
-            message: "success",
-            data: body
         });
     });
 });
@@ -164,6 +164,7 @@ app.get("/api/parties", (req, res) => {
     });
 });
 
+
 // get a single party
 app.get("/api/party/:id", (req, res) => {
     const sql = `SELECT * FROM parties WHERE id = ?`;
@@ -180,6 +181,7 @@ app.get("/api/party/:id", (req, res) => {
         });
     });
 });
+
 
 // delete a party
 app.delete("/api/party/:id", (req, res) => {
@@ -203,10 +205,12 @@ app.delete("/api/party/:id", (req, res) => {
     });
 });
 
+
 // default response for any other request (not found)
 app.use((req, res) => {
     res.status(404).end();
 });
+
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
