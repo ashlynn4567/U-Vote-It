@@ -4,12 +4,12 @@ const mysql = require("mysql2");
 // connect to database 
 const db = mysql.createConnection(
     {
-        host: "us-cdbr-east-05.cleardb.net",
+        host: "localhost",
         // your mysql username
-        user: "bf8306e143c5c3",
+        user: "root",
         // your mysql password
-        password: "f5b24d4a",
-        database: "heroku_ae8597f4fa4d8ed"
+        password: "",
+        database: "election"
     },
     console.log("Connected to the election database")
 );
